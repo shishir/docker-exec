@@ -1,0 +1,3 @@
+[
+  { "keys": ["super+ctrl+k"], "command": "docker_exec"}
+]
