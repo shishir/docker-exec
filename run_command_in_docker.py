@@ -10,8 +10,7 @@ class ShowInPanel:
     self.window = window
 
   def display_results(self):
-    self.panel = self.window.get_output_panel("exec")
-    self.window.run_command("show_panel", {"panel": "output.exec"})
+    self.window().show_quick_panel(quick.exec, self.done)
 
 
 class BaseTask(sublime_plugin.TextCommand):
@@ -38,7 +37,16 @@ class DockerExec(BaseTask):
   def isEnabled(view, args):
     return True
   def run(self, args):
-    self.run_shell_command('docker exec $(basename $(pwd) | xargs -I % echo "tbb_playpen_inventory-api_run_1") npm run test')
+    self.view.window().show_input_panel(
+        "Comand", "npm run test",
+        self.execute, None, None
+    )
+  def execute(self, usr_cmd):
+    component_name = os.path.basename(os.path.dirname(self.view.file_name()))
+    command = "docker exec tbb_playpen_"+component_name+"_run_1 "+usr_cmd
+    self.run_shell_command(command)
+
+
 
 
 
