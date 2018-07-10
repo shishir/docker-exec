@@ -42,7 +42,9 @@ class DockerExec(BaseTask):
         self.execute, None, None
     )
   def execute(self, usr_cmd):
-    component_name = os.path.basename(os.path.dirname(self.view.file_name()))
+    path = self.view.file_name().split("/")
+    print(path)
+    component_name = path[path.index("components") + 1];
     command = "docker exec tbb_playpen_"+component_name+"_run_1 "+usr_cmd
     self.run_shell_command(command)
 
