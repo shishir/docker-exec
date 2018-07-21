@@ -1,3 +1,5 @@
 [
   { "caption": "Docker: Exec", "command": "docker_exec" },
+  { "caption": "Docker: Show running containers", "command": "show_running_containers" },
+  { "caption": "Docker: Toggle Test", "command": "toggle_test" },
 ]
