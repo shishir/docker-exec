@@ -11,7 +11,12 @@ class ShowInPanel:
     self.window = window
 
   def display_results(self):
-    self.window().show_quick_panel(quick.exec, self.done)
+    self.panel = self.window.get_output_panel("exec")
+    self.panel.set_syntax_file("Packages/ANSIescape/ANSI.tmLanguage")
+    self.panel.set_read_only(True)
+    self.window.run_command("show_panel", {"panel": "output.exec"})
+
+    # self.window().show_quick_panel(quick.exec)
 
 
 class BaseTask(sublime_plugin.TextCommand):
@@ -23,6 +28,7 @@ class BaseTask(sublime_plugin.TextCommand):
       "cmd": command,
       "shell": True,
       "working_dir": working_dir,
+      "encoding": "utf-8"
     })
     self.display_results()
     return True
@@ -44,7 +50,6 @@ class DockerExec(BaseTask):
     )
   def execute(self, usr_cmd):
     path = self.view.file_name().split("/")
-    print(path)
     component_name = path[path.index("components") + 1];
     command = "docker exec tbb_playpen_"+component_name+"_run_1 "+usr_cmd
     self.run_shell_command(command)
@@ -62,5 +67,23 @@ class ToggleTest(BaseTask):
     if os.path.exists(new_file_name):
       self.view.window().open_file(new_file_name)
     else:
-      create(new_file_name)
       print('Not Found')
+
+class RunTest(BaseTask):
+  def isEnabled(view, args):
+    return True
+  def run(self, args):
+    file_name_arr = os.path.basename(self.view.file_name()).split(".")
+    cmd = "node_modules/.bin/jest "
+    if file_name_arr[-2] == 'spec':
+      dirname = os.path.dirname(self.view.file_name()).split("/")
+      cmd = cmd + os.path.join(*dirname[(dirname.index("components") + 2):]) +"/"+os.path.basename(self.view.file_name())
+      path = self.view.file_name().split("/")
+      component_name = path[path.index("components") + 1];
+      command = "docker exec -t tbb_playpen_"+component_name+"_run_1 "+cmd + "  --no-colors"
+      self.run_shell_command(command)
+
+
+
+
+

@@ -1,4 +1,5 @@
 [
   { "keys": ["super+ctrl+k"], "command": "docker_exec"},
-  { "keys": ["super+ctrl+t"], "command": "toggle_test"}
+  { "keys": ["super+ctrl+."], "command": "toggle_test"},
+  { "keys": ["super+ctrl+e"], "command": "run_test"}
 ]
