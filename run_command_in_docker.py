@@ -73,15 +73,41 @@ class RunTest(BaseTask):
   def isEnabled(view, args):
     return True
   def run(self, args):
-    file_name_arr = os.path.basename(self.view.file_name()).split(".")
+    file_name = self.view.file_name()
     cmd = "node_modules/.bin/jest "
-    if file_name_arr[-2] == 'spec':
-      dirname = os.path.dirname(self.view.file_name()).split("/")
-      cmd = cmd + os.path.join(*dirname[(dirname.index("components") + 2):]) +"/"+os.path.basename(self.view.file_name())
-      path = self.view.file_name().split("/")
-      component_name = path[path.index("components") + 1];
-      command = "docker exec -t tbb_playpen_"+component_name+"_run_1 "+cmd + "  --no-colors"
-      self.run_shell_command(command)
+    if self.isSpecFile(file_name):
+      cmd = cmd + self.spec_name(file_name)
+    else:
+      fname = self.construct_spec_file_name(file_name)
+      if self.specFileExists(fname):
+        cmd = cmd + fname
+    command = "docker exec -t tbb_playpen_"+self.component_name(file_name)+"_run_1 "+cmd + "  --no-colors"
+    self.run_shell_command(command)
+  def component_name(self, file_name):
+    path = file_name.split("/")
+    component_name = path[path.index("components") + 1];
+    print(component_name)
+    return component_name
+  def spec_name(self, file_name):
+    dirname = os.path.dirname(file_name).split("/")
+    name = os.path.join(*dirname[(dirname.index("components") + 2):]) +"/"+os.path.basename(file_name)
+    return name
+  def isSpecFile(self, file_name):
+    print(os.path.basename(file_name).split("."))
+    file_name_arr = os.path.basename(file_name).split(".")
+    return (file_name_arr[-2] == 'spec') or (file_name_arr[-2] == 'int')
+
+  def specFileExists(self, file_name):
+    return os.path.isfile(file_name)
+
+  def construct_spec_file_name(self, file_name):
+    file_name_arr = os.path.basename(file_name).split(".")
+    spec_file_name = file_name_arr[0] + '.spec.ts'
+    if (os.path.dirname(file_name) + "/"+spec_file_name):
+      return spec_file_name
+    spec_file_name = file_name_arr[0] + ".int.spec.ts"
+    if (os.path.dirname(file_name) + "/"+spec_file_name):
+      return spec_file_name
 
 
 
