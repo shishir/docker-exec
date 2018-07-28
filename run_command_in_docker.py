@@ -86,7 +86,6 @@ class RunTest(BaseTask):
   def component_name(self, file_name):
     path = file_name.split("/")
     component_name = path[path.index("components") + 1];
-    print(component_name)
     return component_name
   def spec_name(self, file_name):
     dirname = os.path.dirname(file_name).split("/")
