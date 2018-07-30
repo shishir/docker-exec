@@ -83,10 +83,11 @@ class RunTest(BaseTask):
       cmd = cmd + self.spec_name(file_name)
     else:
       fname = self.construct_spec_file_name(file_name)
-      if self.specFileExists(fname):
-        cmd = cmd + fname
-    command = "docker exec -t tbb_playpen_"+self.component_name(file_name)+"_run_1 "+cmd + "  --no-colors"
+      cmd = cmd + fname
+    print("cmd:",cmd)
+    command = "docker exec -t tbb_playpen_"+self.component_name(file_name)+"_run_1 "+cmd + "  --no-colors --no-coverage"
     self.run_shell_command(command)
+
   def component_name(self, file_name):
     path = file_name.split("/")
     component_name = path[path.index("components") + 1];
@@ -96,21 +97,23 @@ class RunTest(BaseTask):
     name = os.path.join(*dirname[(dirname.index("components") + 2):]) +"/"+os.path.basename(file_name)
     return name
   def isSpecFile(self, file_name):
-    print(os.path.basename(file_name).split("."))
     file_name_arr = os.path.basename(file_name).split(".")
     return (file_name_arr[-2] == 'spec') or (file_name_arr[-2] == 'int')
 
   def specFileExists(self, file_name):
+    print("specFileExists", file_name)
     return os.path.isfile(file_name)
 
   def construct_spec_file_name(self, file_name):
+    dirname = os.path.dirname(file_name).split("/")
     file_name_arr = os.path.basename(file_name).split(".")
+    # print(file_name)
     spec_file_name = file_name_arr[0] + '.spec.ts'
-    if (os.path.dirname(file_name) + "/"+spec_file_name):
-      return spec_file_name
+    if os.path.isfile((os.path.dirname(file_name) + "/"+spec_file_name)):
+      return os.path.join(*dirname[(dirname.index("components") + 2):]) +"/"+os.path.basename(spec_file_name)
     spec_file_name = file_name_arr[0] + ".int.spec.ts"
-    if (os.path.dirname(file_name) + "/"+spec_file_name):
-      return spec_file_name
+    if os.path.isfile((os.path.dirname(file_name) + "/"+spec_file_name)):
+      return os.path.join(*dirname[(dirname.index("components") + 2):]) +"/"+os.path.basename(spec_file_name)
 
 
 
