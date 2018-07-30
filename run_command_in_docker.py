@@ -59,11 +59,15 @@ class ToggleTest(BaseTask):
     return True
   def run(self, args):
     file_name_arr = os.path.basename(self.view.file_name()).split(".")
-    if file_name_arr[-2] == 'spec':
+    if file_name_arr[-2] == 'spec' or file_name_arr[-2] == 'int':
       file_name = file_name_arr[0] + '.ts'
+      new_file_name = os.path.dirname(self.view.file_name()) + "/"+file_name
     else:
       file_name = file_name_arr[0] + '.spec.ts'
-    new_file_name = os.path.dirname(self.view.file_name()) + "/"+file_name
+      new_file_name = os.path.dirname(self.view.file_name()) + "/"+file_name
+      if not os.path.exists(new_file_name):
+        file_name = file_name_arr[0] + '.int.spec.ts'
+        new_file_name = os.path.dirname(self.view.file_name()) + "/"+file_name
     if os.path.exists(new_file_name):
       self.view.window().open_file(new_file_name)
     else:
